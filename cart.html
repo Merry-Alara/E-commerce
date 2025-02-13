@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Merry</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Internal CSS for Luxury Styling -->
+    <style>
+        /* Luxury Theme - Beige & Dark */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #f5f5dc; /* Soft beige */
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #222;
+            padding: 15px;
+        }
+        
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4c7b0 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #f5f5dc !important;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #d4c7b0 !important;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 50px 0;
+            background: #222;
+        }
+
+        .page-header h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4c7b0;
+        }
+
+        /* Table Styling */
+        .table-dark {
+            background: #222;
+            color: #f5f5dc;
+            border-radius: 10px;
+        }
+
+        /* Buttons */
+        .btn-dark {
+            background: #d4c7b0;
+            color: #1a1a1a;
+            font-weight: bold;
+            border: none;
+            transition: 0.3s;
+            padding: 10px 18px;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+
+        .btn-dark:hover {
+            background: #c0b097;
+        }
+
+        /* Checkout Form */
+        #checkout-form {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        input {
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #d4c7b0;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #c0b097;
+        }
+
+        /* Footer */
+        footer {
+            background: #222;
+            color: #d4c7b0;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Merry</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h2>Shopping Cart</h2>
+    </header>
+
+    <!-- Cart Section -->
+    <div class="container my-5">
+        <h2 class="text-center">Your Cart</h2>
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items"></tbody>
+        </table>
+        <h4>Total: $<span id="total-price">0.00</span></h4>
+        <button class="btn btn-dark" onclick="showCheckout()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Checkout Form (Hidden Initially) -->
+    <div class="container my-5" id="checkout-form">
+        <h2 class="text-center">Checkout</h2>
+        <form id="checkoutForm">
+            <input type="text" placeholder="Full Name" id="name" required>
+            <input type="email" placeholder="Email" id="email" required>
+            <input type="text" placeholder="Shipping Address" id="address" required>
+            <button type="submit" class="btn btn-dark mt-3">Complete Purchase</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Merry. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        let cart = [];
+
+        document.querySelectorAll(".add-to-cart").forEach(button => {
+            button.addEventListener("click", () => {
+                let productName = button.getAttribute("data-name");
+                let productPrice = parseFloat(button.getAttribute("data-price"));
+                cart.push({ name: productName, price: productPrice });
+                updateCart();
+            });
+        });
+
+        function updateCart() {
+            let cartItems = document.getElementById("cart-items");
+            cartItems.innerHTML = "";
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                cartItems.innerHTML += `<tr>
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><button class="btn btn-danger" onclick="removeItem(${index})">Remove</button></td>
+                </tr>`;
+            });
+
+            document.getElementById("total-price").innerText = total.toFixed(2);
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Show Checkout Form
+        function showCheckout() {
+            document.getElementById("checkout-form").style.display = "block";
+        }
+
+        // Handle Checkout Submission
+        document.getElementById("checkoutForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Order Placed Successfully! 🎉");
+            cart = [];
+            updateCart();
+            document.getElementById("checkout-form").style.display = "none";
+        });
+
+    </script>
+</body>
+</html>
